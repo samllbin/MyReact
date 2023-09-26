@@ -1,0 +1,4 @@
+packages:
+  # all packages in direct subdirs of packages/
+  - "packages/*"
+  # packages目录下的直接文件就是Mono-repo的子项目
