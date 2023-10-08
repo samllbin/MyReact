@@ -1,15 +1,15 @@
 import { beginWork } from './beginWork';
 import { completeWork } from './completeWork';
-import { fiberNode } from './fiber';
+import { FiberNode } from './fiber';
 
-//当前正在工作的fiberNode
-let workInprogress: fiberNode | null;
+//当前正在工作的FiberNode
+let workInprogress: FiberNode | null;
 
 //用于执行初始化的操作
-function prepareFreshStack(fiber: fiberNode) {
+function prepareFreshStack(fiber: FiberNode) {
 	workInprogress = fiber;
 }
-function renderPoot(root: fiberNode) {
+function renderPoot(root: FiberNode) {
 	//初始化
 	prepareFreshStack(root);
 
@@ -29,8 +29,8 @@ function workLoop() {
 	}
 }
 
-function performUnitOfWork(fiber: fiberNode) {
-	const next: fiberNode | null = beginWork(fiber);
+function performUnitOfWork(fiber: FiberNode) {
+	const next: FiberNode | null = beginWork(fiber);
 	//将pendingProps赋值给memoizeProps
 	fiber.memoizedProps = fiber.pendingProps;
 
@@ -41,8 +41,8 @@ function performUnitOfWork(fiber: fiberNode) {
 	}
 }
 
-function completeUnitOfWork(fiber: fiberNode) {
-	let node: fiberNode | null = fiber;
+function completeUnitOfWork(fiber: FiberNode) {
+	let node: FiberNode | null = fiber;
 
 	do {
 		completeWork(node);
