@@ -17,6 +17,7 @@ export class FiberNode {
 	index: number;
 
 	memoizedProps: Props | null;
+	memoizedState: any;
 	alternate: FiberNode | null;
 	flags: Flags;
 	updateQueue: unknown;
@@ -44,6 +45,7 @@ export class FiberNode {
 		this.pendingProps = pendingProps;
 		this.memoizedProps = null;
 		this.updateQueue = null;
+		this.memoizedState = null;
 
 		this.alternate = null;
 		//副作用
@@ -62,3 +64,30 @@ export class FiberRootNode {
 		this.finishedWork = null;
 	}
 }
+//创建workInProgress
+export const createWorkInProgress = (
+	current: FiberNode,
+	pendingProps: Props
+): FiberNode => {
+	let wip = current.alternate;
+	if (wip === null) {
+		//mount
+		wip = new FiberNode(current.tag, pendingProps, current.key);
+		wip.tag = current.tag;
+		wip.stateNode = current.stateNode;
+
+		current.alternate = wip;
+		wip.alternate = current;
+	} else {
+		//update
+		wip.pendingProps = pendingProps;
+		wip.flags = NoFlags;
+	}
+	wip.type = current.type;
+	wip.updateQueue = current.updateQueue;
+	wip.child = current.child;
+	wip.memoizedState = current.memoizedState;
+	wip.memoizedProps = current.memoizedProps;
+
+	return wip;
+};
