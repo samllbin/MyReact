@@ -3,7 +3,7 @@ import { Action } from 'shared/ReactTypes';
 export interface Update<State> {
 	action: Action<State>;
 }
-
+//为什么在Update中还有一个shared对象，并且放在pending下，便于wip和current共用一个updateQueue
 export interface UpdateQueue<State> {
 	shared: {
 		pending: Update<State> | null;
@@ -16,17 +16,17 @@ export const createUpdate = <State>(action: Action<State>): Update<State> => {
 	};
 };
 
-export const createUpdateQueue = <Action>() => {
+export const createUpdateQueue = <State>() => {
 	return {
 		shared: {
 			pending: null
 		}
-	} as UpdateQueue<Action>;
+	} as UpdateQueue<State>;
 };
 
-export const enqueueUpdate = <Action>(
-	updateQueue: UpdateQueue<Action>,
-	update: Update<Action>
+export const enqueueUpdate = <State>(
+	updateQueue: UpdateQueue<State>,
+	update: Update<State>
 ) => {
 	updateQueue.shared.pending = update;
 };

@@ -8,7 +8,7 @@ let workInprogress: FiberNode | null;
 
 //用于执行初始化的操作
 function prepareFreshStack(root: FiberRootNode) {
-	workInprogress = createWorkInProgress(root.current);
+	workInprogress = createWorkInProgress(root.current, {});
 }
 //连接container和renderRoot
 export function scheduleUpdateOnFiber(fiber: FiberNode) {
@@ -40,9 +40,15 @@ function renderRoot(root: FiberRootNode) {
 			workLoop();
 			break;
 		} catch (e) {
-			console.warn('workLoop发生错误', e);
+			if (__DEV__) {
+				console.warn('workLoop发生错误', e);
+			}
 		}
 	} while (true);
+	const finishedWork = root.current.alternate;
+	root.finishedWork = finishedWork;
+
+	//commitRoot(root);
 }
 
 function workLoop() {
