@@ -90,7 +90,7 @@ function appendPlacementNodeIntoContainer(
 	}
 
 	const child = finishedWork.child;
-	while (child !== null) {
+	if (child !== null) {
 		appendPlacementNodeIntoContainer(child, hostParent);
 		let sibling = child.sibling;
 
