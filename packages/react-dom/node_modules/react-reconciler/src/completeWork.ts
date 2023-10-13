@@ -2,7 +2,6 @@ import {
 	createInstance,
 	appendInitialChild,
 	createTextInstance,
-	Instance,
 	Container
 } from 'hostConfig';
 import { FiberNode } from './fiber';
