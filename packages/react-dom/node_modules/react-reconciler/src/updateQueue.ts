@@ -24,7 +24,7 @@ export const createUpdateQueue = <State>() => {
 		shared: {
 			pending: null
 		},
-		dipatch: null
+		dispatch: null
 	} as UpdateQueue<State>;
 };
 
