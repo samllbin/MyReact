@@ -10,7 +10,7 @@ export interface UpdateQueue<State> {
 		pending: Update<State> | null;
 	};
 	//为hook保存dispatch
-	dipatch: Dispatch<State> | null;
+	dispatch: Dispatch<State> | null;
 }
 
 export const createUpdate = <State>(action: Action<State>): Update<State> => {
