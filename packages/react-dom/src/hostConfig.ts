@@ -51,3 +51,11 @@ export function removeChild(
 ) {
 	container.removeChild(child);
 }
+
+export function insertChildContainer(
+	child: Instance,
+	container: Container,
+	before: Instance
+) {
+	container.insertBefore(child, before);
+}
