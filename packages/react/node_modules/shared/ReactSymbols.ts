@@ -1,5 +1,8 @@
 const isSupportSymbol = typeof Symbol === 'function' && Symbol.for;
-const REACT_ELEMENT_TYPE = isSupportSymbol
+export const REACT_ELEMENT_TYPE = isSupportSymbol
 	? Symbol.for('react.element')
 	: 0xeac7;
-export default REACT_ELEMENT_TYPE;
+
+export const REACT_FRAGMENT_TYPE = isSupportSymbol
+	? Symbol.for('react.fragment')
+	: 0xeacb;
