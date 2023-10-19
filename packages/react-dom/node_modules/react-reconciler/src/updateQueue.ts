@@ -55,19 +55,33 @@ export const enqueueUpdate = <State>(
 
 export const processUpdateQueue = <State>(
 	baseState: State,
-	pendingUpdate: Update<State> | null
+	pendingUpdate: Update<State> | null,
+	renderLane: Lane
 ): { memoizedState: State } => {
 	const result: ReturnType<typeof processUpdateQueue<State>> = {
 		memoizedState: baseState
 	};
 	if (pendingUpdate !== null) {
-		const action: Action<State> = pendingUpdate.action;
-		if (action instanceof Function) {
-			result.memoizedState = action(baseState);
-		} else {
-			result.memoizedState = action;
-		}
+		//第一个update
+		const first = pendingUpdate.next;
+		let pending = pendingUpdate.next as Update<any>;
+		do {
+			const updateLane = pending.lane;
+			if (updateLane === renderLane) {
+				const action = pending.action;
+				if (action instanceof Function) {
+					baseState = action(baseState);
+				} else {
+					baseState = action;
+				}
+			} else {
+				if (__DEV__) {
+					console.error('不应该进入这个逻辑');
+				}
+			}
+			pending = pending?.next as Update<any>;
+		} while (pending !== first);
 	}
-
+	result.memoizedState = baseState;
 	return result;
 };
