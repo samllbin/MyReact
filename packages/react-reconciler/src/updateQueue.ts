@@ -1,8 +1,11 @@
 import { Dispatch } from 'react/src/currentDispather';
 import { Action } from 'shared/ReactTypes';
+import { Lane } from './fiberLanes';
 
 export interface Update<State> {
 	action: Action<State>;
+	lane: Lane;
+	next: Update<any> | null;
 }
 //为什么在Update中还有一个shared对象，并且放在pending下，便于wip和current共用一个updateQueue
 export interface UpdateQueue<State> {
@@ -13,9 +16,14 @@ export interface UpdateQueue<State> {
 	dispatch: Dispatch<State> | null;
 }
 
-export const createUpdate = <State>(action: Action<State>): Update<State> => {
+export const createUpdate = <State>(
+	action: Action<State>,
+	lane: Lane
+): Update<State> => {
 	return {
-		action
+		action,
+		lane,
+		next: null
 	};
 };
 
@@ -32,6 +40,16 @@ export const enqueueUpdate = <State>(
 	updateQueue: UpdateQueue<State>,
 	update: Update<State>
 ) => {
+	const pending = updateQueue.shared.pending;
+	if (pending === null) {
+		//自己形成环状链表
+		update.next = update;
+	} else {
+		//pending指向最后插入的update
+		//.next为第一个update
+		update.next = pending.next;
+		pending.next = update;
+	}
 	updateQueue.shared.pending = update;
 };
 
