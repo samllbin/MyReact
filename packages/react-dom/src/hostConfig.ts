@@ -1,5 +1,5 @@
 import { FiberNode } from 'react-reconciler/src/fiber';
-import { HostText } from 'react-reconciler/src/workTags';
+import { HostComponent, HostText } from 'react-reconciler/src/workTags';
 import { Props } from 'shared/ReactTypes';
 import { updateFiberProps, DOMElement } from './SyntheticEvent';
 
@@ -33,7 +33,8 @@ export function commitUpdate(fiber: FiberNode) {
 		case HostText:
 			const text = fiber.memoizedProps?.content;
 			return commitTextUpdate(fiber.stateNode, text);
-
+		case HostComponent:
+			return updateFiberProps(fiber.stateNode, fiber.memoizedProps);
 		default:
 			if (__DEV__) {
 				console.warn('未实现的update类型', fiber);
@@ -52,7 +53,7 @@ export function removeChild(
 	container.removeChild(child);
 }
 
-export function insertChildContainer(
+export function insertChildToContainer(
 	child: Instance,
 	container: Container,
 	before: Instance
