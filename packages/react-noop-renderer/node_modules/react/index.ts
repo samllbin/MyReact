@@ -20,6 +20,11 @@ export const useTransition: Dispatcher['useTransition'] = () => {
 	const dispatcher = resolveDispatcher();
 	return dispatcher.useTransition();
 };
+export const useRef: Dispatcher['useRef'] = (initialValue) => {
+	//获取当前上下文中所以的hook,并从中拿到useState
+	const dispatcher = resolveDispatcher();
+	return dispatcher.useRef(initialValue);
+};
 
 //建立内部数据共享层数据共享层,react中名字翻译为中文为,内部数据不要动，动了就会被炒鱿鱼
 export const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {

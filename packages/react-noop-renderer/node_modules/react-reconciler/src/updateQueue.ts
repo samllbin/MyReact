@@ -106,6 +106,7 @@ export const processUpdateQueue = <State>(
 				}
 			}
 			pending = pending?.next as Update<any>;
+			baseState = newState;
 		} while (pending !== first);
 		if (newBaseQueueFirst === null) {
 			//没有被跳过

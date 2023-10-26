@@ -4,6 +4,7 @@ import {
 	commitHookEffectListCreate,
 	commitHookEffectListDestory,
 	commitHookEffectListUnmount,
+	commitLayoutEffects,
 	commitMutationEffects
 } from './commitWork';
 import { completeWork } from './completeWork';
@@ -284,6 +285,7 @@ function commitRoot(root: FiberRootNode) {
 		root.current = finishedWork;
 
 		//Layout
+		commitLayoutEffects(finishedWork, root);
 	} else {
 		//切换wip树与current树
 		root.current = finishedWork;
