@@ -3,6 +3,7 @@ import { Dispatcher, resolveDispatcher } from './src/currentDispather';
 import currentDispatcher from './src/currentDispather';
 import CurrentBatchConfig from './src/currentBatchConfig';
 import { jsxDEV, jsx, isValidElement as isValidElementFn } from './src/jsx';
+export { createContext } from './src/context';
 
 export const useState: Dispatcher['useState'] = (initialState) => {
 	//获取当前上下文中所以的hook,并从中拿到useState
@@ -11,19 +12,20 @@ export const useState: Dispatcher['useState'] = (initialState) => {
 };
 
 export const useEffect: Dispatcher['useEffect'] = (create, deps) => {
-	//获取当前上下文中所以的hook,并从中拿到useState
 	const dispatcher = resolveDispatcher();
 	return dispatcher.useEffect(create, deps);
 };
 export const useTransition: Dispatcher['useTransition'] = () => {
-	//获取当前上下文中所以的hook,并从中拿到useState
 	const dispatcher = resolveDispatcher();
 	return dispatcher.useTransition();
 };
 export const useRef: Dispatcher['useRef'] = (initialValue) => {
-	//获取当前上下文中所以的hook,并从中拿到useState
 	const dispatcher = resolveDispatcher();
 	return dispatcher.useRef(initialValue);
+};
+export const useContext: Dispatcher['useContext'] = (context) => {
+	const dispatcher = resolveDispatcher();
+	return dispatcher.useContext(context);
 };
 
 //建立内部数据共享层数据共享层,react中名字翻译为中文为,内部数据不要动，动了就会被炒鱿鱼
