@@ -20,16 +20,16 @@ function App() {
 	return (
 		<>
 			<TabButton isActive={tab === 'about'} onClick={() => selectTab('about')}>
-				首页
+				a
 			</TabButton>
 			<TabButton isActive={tab === 'posts'} onClick={() => selectTab('posts')}>
-				博客 (render慢)
+				b
 			</TabButton>
 			<TabButton
 				isActive={tab === 'contact'}
 				onClick={() => selectTab('contact')}
 			>
-				联系我
+				c
 			</TabButton>
 			<hr />
 			{tab === 'about' && <AboutTab />}

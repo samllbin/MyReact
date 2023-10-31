@@ -69,8 +69,9 @@ export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
 
 //调度阶段入口
 function ensureRootIsScheduled(root: FiberRootNode) {
+	//获取最高的优先级
 	const updateLane = getHighestPriorityLane(root.pendingLanes);
-
+	//当前是否存在调度
 	const existingCallback = root.callbackNode;
 
 	if (updateLane === NoLane) {
@@ -88,7 +89,9 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 	if (curPriority === prevPriority) {
 		return;
 	}
+	//插进来的优先级比当前的高
 	if (existingCallback !== null) {
+		//取消当前的回调
 		unstable_cancelCallback(existingCallback);
 	}
 	let newCallbackNode = null;
@@ -101,8 +104,9 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 
 	if (updateLane === SyncLane) {
 		//同步优先级 用微任务调度
-
+		//将performSyncWorkOnRoot放进数组
 		scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root));
+		//用微任务调度这些数组中的函数
 		scheduleMicroTask(flushSyncCallbacks);
 	} else {
 		//其他优先级用宏任务调度
@@ -144,6 +148,7 @@ function performConcurrentWorkOnRoot(
 	//保证useEffect回调执行完,useEffect可能也会产生更新
 	const didFlushPassiveEffect = flushPassiveEffects(root.pendingPassiveEffects);
 	if (didFlushPassiveEffect) {
+		//产生了更高优先级的更新
 		if (root.callbackNode !== curCallback) {
 			//useEffect中产生的更新优先级更高
 			return null;
@@ -177,7 +182,7 @@ function performConcurrentWorkOnRoot(
 	}
 }
 
-//renderRoot
+//renderRoot,同步放微任务调度
 function performSyncWorkOnRoot(root: FiberRootNode) {
 	const nextLane = getHighestPriorityLane(root.pendingLanes);
 
@@ -205,6 +210,7 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
 	if (__DEV__) {
 		console.log(`开始${shouldTimeSlice ? '并发' : '同步'}更新`, root);
 	}
+	//是否为同一个更新被事件切片打断
 	if (wipRootRenderLane !== lane) {
 		//初始化
 		prepareFreshStack(root, lane);

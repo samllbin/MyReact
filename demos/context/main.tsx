@@ -17,7 +17,7 @@ function App() {
 	);
 }
 
-function Cpn() {
+class Cpn {
 	const a = useContext(ctxA);
 	const b = useContext(ctxB);
 	return (
