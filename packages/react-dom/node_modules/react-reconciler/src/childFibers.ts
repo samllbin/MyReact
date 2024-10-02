@@ -347,5 +347,5 @@ function updateFragment(
 	return fiber;
 }
 
-export const reconcileChildFibers = ChildReconciler(true);
-export const mountChildFibers = ChildReconciler(false);
+export const reconcileChildFibers = ChildReconciler(true); //UPDATE
+export const mountChildFibers = ChildReconciler(false); //MOUNT

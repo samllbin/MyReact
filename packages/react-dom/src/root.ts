@@ -18,3 +18,7 @@ export function createRoot(container: Container) {
 		}
 	};
 }
+
+// function APP(){}
+// <div #root>
+// ReactDOM.createRoot(root).render(<APP />)

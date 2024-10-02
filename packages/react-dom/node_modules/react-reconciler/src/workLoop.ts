@@ -75,6 +75,7 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 	const existingCallback = root.callbackNode;
 
 	if (updateLane === NoLane) {
+		//当前的更新的目的就是取消之前正在执行的任务
 		if (existingCallback !== null) {
 			unstable_cancelCallback(existingCallback);
 		}
@@ -85,7 +86,7 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 
 	const curPriority = updateLane;
 	const prevPriority = root.callbackPriority;
-
+	//如果当前优先级和之前优先级相同，则直接返回，两次更新会合并
 	if (curPriority === prevPriority) {
 		return;
 	}
@@ -113,7 +114,7 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 		const schedulerPriority = lanesToSchedulePriority(updateLane);
 		newCallbackNode = scheduleCallback(
 			schedulerPriority,
-			//@ts-ignore
+			// @ts-ignore
 			performConcurrentWorkOnRoot.bind(null, root)
 		);
 	}
@@ -211,6 +212,7 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
 		console.log(`开始${shouldTimeSlice ? '并发' : '同步'}更新`, root);
 	}
 	//是否为同一个更新被事件切片打断
+	//只有这里会对wipRootRenderLane进行修改
 	if (wipRootRenderLane !== lane) {
 		//初始化
 		prepareFreshStack(root, lane);
@@ -288,6 +290,7 @@ function commitRoot(root: FiberRootNode) {
 		//Mutation Placement
 		commitMutationEffects(finishedWork, root);
 		//切换wip树与current树
+
 		root.current = finishedWork;
 
 		//Layout

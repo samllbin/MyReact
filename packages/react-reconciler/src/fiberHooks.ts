@@ -245,6 +245,95 @@ function updateRef<T>(initialValue: T): { current: T } {
 	return hook.memoizedState;
 }
 
+function mountState<State>(
+	initialState: (() => State) | State
+): [State, Dispatch<State>] {
+	//找到当前useState对应的hook数据
+	const hook = mountWorkInProgresHook();
+
+	let memoizedState = null;
+	if (initialState instanceof Function) {
+		memoizedState = initialState();
+	} else {
+		memoizedState = initialState;
+	}
+	const queue = createUpdateQueue<State>();
+	hook.updateQueue = queue;
+	hook.memoizedState = memoizedState;
+	hook.baseState = memoizedState;
+
+	// @ts-ignore
+	const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue);
+	queue.dispatch = dispatch;
+
+	return [memoizedState, dispatch];
+}
+
+function mountTransition(): [boolean, (callback: () => void) => void] {
+	const [isPending, setPending] = mountState(false);
+	const hook = mountWorkInProgresHook();
+	const start = startTransition.bind(null, setPending);
+	hook.memoizedState = start;
+
+	return [isPending, start];
+}
+
+function updateTransition(): [boolean, (callback: () => void) => void] {
+	const [isPending] = updateState();
+	const hook = updateWorkInProgresHook();
+	const start = hook.memoizedState;
+	return [isPending as boolean, start];
+}
+
+function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
+	setPending(true);
+
+	const prevTransition = CurrentBatchConfig.transition;
+	CurrentBatchConfig.transition = 1;
+
+	callback();
+	setPending(false);
+
+	CurrentBatchConfig.transition = prevTransition;
+}
+
+function dispatchSetState<State>(
+	fiber: FiberNode,
+	updateQueue: UpdateQueue<State>,
+	action: Action<State>
+) {
+	const lane = requestUpdateLane();
+	const update = createUpdate(action, lane);
+	enqueueUpdate(updateQueue, update);
+	scheduleUpdateOnFiber(fiber, lane);
+}
+
+//返回hook数据
+function mountWorkInProgresHook(): Hook {
+	const hook: Hook = {
+		memoizedState: null,
+		next: null,
+		updateQueue: null,
+		baseQueue: null,
+		baseState: null
+	};
+	if (workInProgressHook === null) {
+		//mount阶段，且为第一个hook
+		if (currentlyRenderingFiber === null) {
+			//未在函数式组件内调用hook
+			throw new Error('请在函数式组件内调用hook');
+		} else {
+			workInProgressHook = hook;
+			currentlyRenderingFiber.memoizedState = workInProgressHook;
+		}
+	} else {
+		//mount时的后续hook
+		workInProgressHook.next = hook;
+		workInProgressHook = hook;
+	}
+	return workInProgressHook;
+}
+
 function updateWorkInProgresHook(): Hook {
 	//TODO:render阶段触发的更新
 	let nextCurrentHook: Hook | null;
@@ -292,95 +381,6 @@ function updateWorkInProgresHook(): Hook {
 	}
 	return workInProgressHook;
 }
-
-function mountState<State>(
-	initialState: (() => State) | State
-): [State, Dispatch<State>] {
-	//找到当前useState对应的hook数据
-	const hook = mountWorkInProgresHook();
-
-	let memoizedState = null;
-	if (initialState instanceof Function) {
-		memoizedState = initialState();
-	} else {
-		memoizedState = initialState;
-	}
-	const queue = createUpdateQueue<State>();
-	hook.updateQueue = queue;
-	hook.memoizedState = memoizedState;
-	hook.baseState = memoizedState;
-
-	// @ts-ignore
-	const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue);
-	queue.dispatch = dispatch;
-
-	return [memoizedState, dispatch];
-}
-
-function mountTransition(): [boolean, (callback: () => void) => void] {
-	const [isPending, setPending] = mountState(false);
-	const hook = mountWorkInProgresHook();
-	const start = startTransition.bind(null, setPending);
-	hook.memoizedState = start;
-
-	return [isPending, start];
-}
-
-function updateTransition(): [boolean, (callback: () => void) => void] {
-	const [isPending] = updateState();
-	const hook = updateWorkInProgresHook();
-	const start = hook.memoizedState;
-	return [isPending as boolean, start];
-}
-
-function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
-	setPending(true);
-	const prevTransition = CurrentBatchConfig.transition;
-	CurrentBatchConfig.transition = 1;
-
-	callback();
-	setPending(false);
-
-	CurrentBatchConfig.transition = prevTransition;
-}
-
-function dispatchSetState<State>(
-	fiber: FiberNode,
-	updateQueue: UpdateQueue<State>,
-	action: Action<State>
-) {
-	const lane = requestUpdateLane();
-	const update = createUpdate(action, lane);
-	enqueueUpdate(updateQueue, update);
-	scheduleUpdateOnFiber(fiber, lane);
-}
-
-//返回hook数据
-function mountWorkInProgresHook(): Hook {
-	const hook: Hook = {
-		memoizedState: null,
-		next: null,
-		updateQueue: null,
-		baseQueue: null,
-		baseState: null
-	};
-	if (workInProgressHook === null) {
-		//mount阶段，且为第一个hook
-		if (currentlyRenderingFiber === null) {
-			//未在函数式组件内调用hook
-			throw new Error('请在函数式组件内调用hook');
-		} else {
-			workInProgressHook = hook;
-			currentlyRenderingFiber.memoizedState = workInProgressHook;
-		}
-	} else {
-		//mount时的后续hook
-		workInProgressHook.next = hook;
-		workInProgressHook = hook;
-	}
-	return workInProgressHook;
-}
-
 function readContext<T>(context: ReactContext<T>): T {
 	const consumer = currentlyRenderingFiber;
 	if (consumer === null) {

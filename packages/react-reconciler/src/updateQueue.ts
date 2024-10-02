@@ -58,8 +58,8 @@ export const processUpdateQueue = <State>(
 	pendingUpdate: Update<State> | null,
 	renderLane: Lane
 ): {
-	memoizedState: State;
-	baseState: State;
+	memoizedState: State; //在这次updateQueue中所有优先级够的update执行的结果
+	baseState: State; //在这次更新中第一次出现优先级不够的update之前的update执行的结果
 	baseQueue: Update<State> | null;
 } => {
 	const result: ReturnType<typeof processUpdateQueue<State>> = {
@@ -69,6 +69,8 @@ export const processUpdateQueue = <State>(
 	};
 	if (pendingUpdate !== null) {
 		//第一个update
+		//render lane
+		//update -> lane
 		const first = pendingUpdate.next;
 		let pending = pendingUpdate.next as Update<any>;
 
@@ -106,6 +108,7 @@ export const processUpdateQueue = <State>(
 				}
 			}
 			pending = pending?.next as Update<any>;
+			// baseState = newState;
 			baseState = newState;
 		} while (pending !== first);
 		if (newBaseQueueFirst === null) {

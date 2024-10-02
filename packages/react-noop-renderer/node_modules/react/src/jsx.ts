@@ -1,5 +1,3 @@
-//返回结果是ReactElement的数组结构
-
 import {
 	REACT_ELEMENT_TYPE,
 	REACT_FRAGMENT_TYPE

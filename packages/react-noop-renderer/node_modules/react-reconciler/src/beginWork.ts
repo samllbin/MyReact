@@ -31,6 +31,7 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
 
 		case FunctionComponent:
 			return updateFunctionComponent(wip, renderLane);
+		//<></>
 		case Fragment:
 			return updateFragment(wip);
 		case ContextProvider:
@@ -79,11 +80,12 @@ function updateHostRoot(wip: FiberNode, renderLane: Lane) {
 	const updateQueue = wip.updateQueue as UpdateQueue<Element>;
 	const pending = updateQueue.shared.pending;
 	updateQueue.shared.pending = null;
-	//memoizedState为传递进来的React Element,<APP/>组件
+	//memoizedState为传递进来的React Element <- <APP/>组件
 	const { memoizedState } = processUpdateQueue(baseState, pending, renderLane);
 	wip.memoizedState = memoizedState;
 
 	const nextChildren = wip.memoizedState;
+	// console.log(nextChildren);
 	reconcileChildren(wip, nextChildren);
 	return wip.child;
 }

@@ -136,6 +136,7 @@ function safelyDetachRef(current: FiberNode) {
 export const commitMutationEffects = commitEffects(
 	'mutation',
 	MutationMask | PassiveMask,
+	//处理不同类型flag的函数
 	commitMutationEffectOnfiber
 );
 export const commitLayoutEffects = commitEffects(
@@ -209,6 +210,7 @@ export function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
 	});
 }
 
+//将子fiber和兄弟fiber添加到父fiber的childrenToDeletee中
 function recordHostChildrenToDelete(
 	childrenToDelete: FiberNode[],
 	unmountFiber: FiberNode
@@ -235,6 +237,7 @@ function recordHostChildrenToDelete(
 function commitDeletion(childToDelete: FiberNode, root: FiberRootNode) {
 	const rootChildrenToDelete: FiberNode[] = [];
 
+	//处理删除之前的一些操作，比如hook的destory及ref等
 	//递归子树
 	commitNestedComponent(childToDelete, (unmountFiber) => {
 		switch (unmountFiber.tag) {

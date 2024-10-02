@@ -18,19 +18,26 @@ export class FiberNode {
 	tag: WorkTag;
 	pendingProps: Props;
 	key: Key;
-	stateNode: any;
+
+	stateNode: any; //instance
 
 	return: FiberNode | null;
 	sibling: FiberNode | null;
 	child: FiberNode | null;
+
 	ref: Ref | null;
+
 	index: number;
 
 	memoizedProps: Props | null;
+
 	memoizedState: any;
+
 	alternate: FiberNode | null;
+
 	flags: Flags;
 	subtreeFlags: Flags;
+
 	updateQueue: unknown;
 	deletions: FiberNode[] | null;
 
